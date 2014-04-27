@@ -17,12 +17,12 @@ instance.conf.update(
 )
 
 
-@instance.task()
+@instance.task(queue='fashion')
 def master():
     print 'call slave()'
     slave.delay()
 
 
-@instance.task()
+@instance.task(queue='fashion')
 def slave():
     print 'slave called.'
