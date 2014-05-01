@@ -32,11 +32,17 @@ class CafeBoard(Base):
     cafe_id = Column(Integer, ForeignKey('cafe.id'), index=True)
     cafe = relationship('Cafe', backref=backref('boards', order_by=id))
 
+    def __init__(self, board_id, title, cafe):
+        self.board_id = board_id
+        self.title = title
+        self.cafe_id = cafe.id
+
 
 class CafeArticle(Base):
     __tablename__ = 'cafe_article'
 
     id = Column(Integer, primary_key=True)
+    article_id = Column(Integer)
     title = Column(String(255))
     contents = Column(Text)
     crawled_at = Column(DateTime, default=datetime.now())
@@ -46,6 +52,20 @@ class CafeArticle(Base):
 
     board_id = Column(Integer, ForeignKey('cafe_board.id'), index=True)
     board = relationship('CafeBoard', backref=backref('articles', order_by=id))
+
+    def __init__(self, article_id, title, contents, cafe, board):
+        self.article_id = article_id
+        self.title = title
+        self.contents = contents
+        if isinstance(cafe, Cafe):
+            self.cafe_id = cafe.id
+        else:
+            self.cafe_id = cafe
+
+        if isinstance(board, CafeBoard):
+            self.board_id = board.id
+        else:
+            self.board_id = board
 
 
 def get_or_create(session, model, **kwargs):
