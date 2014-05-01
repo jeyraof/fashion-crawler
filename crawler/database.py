@@ -15,7 +15,7 @@ class Cafe(Base):
 
     id = Column(Integer, primary_key=True)
     cafe_id = Column(Integer)
-    title = Column(String)
+    title = Column(String(255))
 
 
 class CafeBoard(Base):
@@ -23,7 +23,7 @@ class CafeBoard(Base):
 
     id = Column(Integer, primary_key=True)
     board_id = Column(Integer)
-    title = Column(String)
+    title = Column(String(255))
 
     cafe = relationship('Cafe', backref('boards', order_by=id))
 
@@ -32,7 +32,7 @@ class CafeArticle(Base):
     __tablename__ = 'cafe_article'
 
     id = Column(Integer, primary_key=True)
-    title = Column(String)
+    title = Column(String(255))
     contents = Column(Text)
     crawled_at = Column(DateTime, default=datetime.now())
 
