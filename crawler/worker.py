@@ -2,14 +2,14 @@
 
 from celery import Celery
 from datetime import timedelta
-
 from .config import CELERY_BROKER_URI
+from .database import instant_session
 
 instance = Celery('crawler',
                   broker=CELERY_BROKER_URI)
 instance.conf.update(
     CELERYBEAT_SCHEDULE={
-        'add-every-30-seconds': {
+        'renew-article-list': {
             'task': 'crawler.worker.master',
             'schedule': timedelta(seconds=10),
         },
@@ -25,4 +25,13 @@ def master():
 
 @instance.task(queue='fashion')
 def slave():
-    print 'slave called.'
+    save_article.delay()
+
+
+@instance.task(queue='fashion')
+def save_article():
+    session = instant_session()
+    # Act as db session
+    session.remove()
+
+
