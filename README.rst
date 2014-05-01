@@ -6,8 +6,8 @@ For using this, locate your prompt at this repo. So if you use `ls` command, you
 Now, you can using this as following bottom:
 
 
-Beat
-----
+Beat (=. Periodic task)
+-----------------------
 
 Run beat for collect article list and apply this to miner.
 
