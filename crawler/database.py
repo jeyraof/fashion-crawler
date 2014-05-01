@@ -13,9 +13,19 @@ Base = declarative_base(bind=db)
 class Cafe(Base):
     __tablename__ = 'cafe'
 
+    id = Column(Integer, primary_key=True)
+    cafe_id = Column(Integer)
+    title = Column(String)
+
 
 class CafeBoard(Base):
     __tablename__ = 'cafe_board'
+
+    id = Column(Integer, primary_key=True)
+    board_id = Column(Integer)
+    title = Column(String)
+
+    cafe = relationship('Cafe', backref('boards', order_by=id))
 
 
 class CafeArticle(Base):
@@ -25,6 +35,8 @@ class CafeArticle(Base):
     title = Column(String)
     contents = Column(Text)
     crawled_at = Column(DateTime, default=datetime.now())
+
+    board = relationship('CafeBoard')
 
 
 def get_or_create(session, model, **kwargs):
