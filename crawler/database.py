@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from sqlalchemy import Column, Integer, String, Text, DateTime, create_engine
+from sqlalchemy import Column, Integer, String, Text, DateTime, create_engine, ForeignKey
 from sqlalchemy.orm import relationship, backref, sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
@@ -17,6 +17,10 @@ class Cafe(Base):
     cafe_id = Column(Integer)
     title = Column(String(255))
 
+    def __init__(self, cafe_id, title):
+        self.cafe_id = cafe_id
+        self.title = title
+
 
 class CafeBoard(Base):
     __tablename__ = 'cafe_board'
@@ -25,7 +29,8 @@ class CafeBoard(Base):
     board_id = Column(Integer)
     title = Column(String(255))
 
-    cafe = relationship('Cafe', backref('boards', order_by=id))
+    cafe_id = Column(Integer, ForeignKey('cafe.id'), index=True)
+    cafe = relationship('Cafe', backref=backref('boards', order_by=id))
 
 
 class CafeArticle(Base):
@@ -36,17 +41,22 @@ class CafeArticle(Base):
     contents = Column(Text)
     crawled_at = Column(DateTime, default=datetime.now())
 
-    board = relationship('CafeBoard')
+    cafe_id = Column(Integer, ForeignKey('cafe.id'), index=True)
+    cafe = relationship('Cafe', backref=backref('articles', order_by=id))
+
+    board_id = Column(Integer, ForeignKey('cafe_board.id'), index=True)
+    board = relationship('CafeBoard', backref=backref('articles', order_by=id))
 
 
 def get_or_create(session, model, **kwargs):
-    instance = session.query(model).filter_by(**kwargs).first()
-    if instance:
-        return instance
+    result = session.query(model).filter_by(**kwargs).first()
+    if result:
+        return result, False
     else:
-        instance = model(**kwargs)
-        session.add(instance)
-        return instance
+        data = model(**kwargs)
+        session.add(data)
+        session.commit()
+        return data, True
 
 
 def instant_session():
