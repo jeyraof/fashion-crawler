@@ -35,7 +35,11 @@ class CafeBoard(Base):
     def __init__(self, board_id, title, cafe):
         self.board_id = board_id
         self.title = title
-        self.cafe_id = cafe.id
+
+        if isinstance(cafe, Cafe):
+            self.cafe_id = cafe.id
+        else:
+            self.cafe_id = cafe
 
 
 class CafeArticle(Base):
